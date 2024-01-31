@@ -35,11 +35,11 @@ struct TreeNode {
         }
     }
     Point point_;
-    TreeNode* left_node_ = nullptr;
-    TreeNode* right_node_ = nullptr;
+    TreeNode* left_node_{nullptr};
+    TreeNode* right_node_{nullptr};
 };
 
-TreeNode* insert(const Point& point, TreeNode* node, uint32_t dim) {
+TreeNode* insert(const Point& point, TreeNode*& node, uint32_t dim) {
     if(!node) {
         node = new TreeNode(point);
     } else if (point.get_dim(dim) <= node->point_.get_dim(dim)) {
