@@ -18,6 +18,15 @@ int main() {
         std::cout << "tree is empty" << std::endl;
     }
     printtree(root);
+    std::cout << "min x point node is " << FindMin(root, 0, 0)->point_ << std::endl;
+    std::cout << "min y point node is " << FindMin(root, 1, 0)->point_ << std::endl;
 
+    delete_node_safely(Point(70,70), root, 0);
+    printtree(root);
+
+    // must be final to release memory
+    if (root) {
+        delete root;
+    }
     return 0;
 }
