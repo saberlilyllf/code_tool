@@ -156,10 +156,14 @@ TreeNode* delete_node(const Point& data, TreeNode* node, uint32_t dim) {
 
     if (data.get_dim(dim) < node->point_.get_dim(dim)) {
         node->left_node_ = delete_node(data, node->left_node_, next_dim);
-        std::cout << "dim is " << dim << "  next_dim is  " << next_dim << "   min node is " << node->left_node_->point_ << "      " << __LINE__  << std::endl;
+        if (node->left_node_) {
+            std::cout << "dim is " << dim << "  next_dim is  " << next_dim << "   min node is " << node->left_node_->point_ << "      " << __LINE__  << std::endl;
+        }
     } else {
         node->right_node_ = delete_node(data, node->right_node_, next_dim);
-        std::cout << "dim is " << dim << "  next_dim is  " << next_dim << "   min node is " << node->left_node_->point_ << "      " << __LINE__  << std::endl;
+        if (node->left_node_) {
+            std::cout << "dim is " << dim << "  next_dim is  " << next_dim << "   min node is " << node->left_node_->point_ << "      " << __LINE__  << std::endl;
+        }
     }
     return node;
 }
@@ -172,8 +176,7 @@ void delete_node_safely(const Point& data, TreeNode*& node, uint32_t dim) {
     }
     std::cout << "dim is " << dim << "   find node is " << found_node->point_ << "      " << __LINE__  << std::endl;
 
-    delete_node(data, node, dim);
+    node = delete_node(data, node, dim); // reset root node if root is deleted
     delete found_node;
     found_node = nullptr;
-
 }

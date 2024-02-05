@@ -21,8 +21,15 @@ int main() {
     std::cout << "min x point node is " << FindMin(root, 0, 0)->point_ << std::endl;
     std::cout << "min y point node is " << FindMin(root, 1, 0)->point_ << std::endl;
 
-    delete_node_safely(Point(70,70), root, 0);
-    printtree(root);
+    // delete_node_safely(Point(70,70), root, 0);
+    // printtree(root);
+
+    // test node delete, especially root node
+    for (auto& p : point_v) {
+        delete_node_safely(p, root, 0);
+        printtree(root);
+
+    }
 
     // must be final to release memory
     if (root) {
