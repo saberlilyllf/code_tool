@@ -24,11 +24,15 @@ int main() {
     // delete_node_safely(Point(70,70), root, 0);
     // printtree(root);
 
+
+    auto BoundingBox = UpdateBounding(root, 0);
+    PrintBox(root->current_bound);
+    PrintBox(root->left_node_->current_bound);
+    PrintBox(root->right_node_->current_bound);
     // test node delete, especially root node
     for (auto& p : point_v) {
         delete_node_safely(p, root, 0);
         printtree(root);
-
     }
 
     // must be final to release memory
@@ -37,3 +41,4 @@ int main() {
     }
     return 0;
 }
+

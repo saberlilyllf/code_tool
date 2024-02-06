@@ -32,6 +32,62 @@ std::ostream& operator << (std::ostream& os, const Point& p) {
     return os;
 }
 
+struct BoundingBox {
+
+    // BoundingBox(const Point& p) {
+    //     x_min = p.point_x;
+    //     x_max = p.point_x;
+    //     y_min = p.point_y;
+    //     y_max = p.point_y;
+    // }
+    double x_min {std::numeric_limits<double>::max()};
+    double x_max {std::numeric_limits<double>::min()};
+    double y_min {std::numeric_limits<double>::max()};
+    double y_max {std::numeric_limits<double>::min()};
+    void UpdateAll(const BoundingBox& box) {
+        if (box.x_max > x_max) {
+            x_max = box.x_max;
+        }
+        if (box.y_max > y_max) {
+            y_max = box.y_max;
+        }
+        if (box.x_min < x_min) {
+            x_min = box.x_min;
+        }
+        if (box.y_min < y_min) {
+            y_min = box.y_min;
+        }
+    }
+
+    void UpdatePoint(const Point& p) {
+        x_min = p.point_x;
+        x_max = p.point_x;
+        y_min = p.point_y;
+        y_max = p.point_y;
+    }
+
+    void UpdateXMin(const double& d) {
+        if (x_min > d) {
+            x_min = d;
+        }
+    }
+    void UpdateXMax(const double& d) {
+        if (x_max < d) {
+            x_max = d;
+        }
+    }
+    void UpdateYMin(const double& d) {
+        if (y_min > d) {
+            y_min = d;
+        }
+    }
+    void UpdateYMax(const double& d) {
+        if (y_max < d) {
+            y_max = d;
+        }
+    }
+};
+
 struct TreeNode {
     TreeNode(const Point& p) : point_(p){}
     ~TreeNode() {
@@ -42,6 +98,10 @@ struct TreeNode {
     Point point_;
     TreeNode* left_node_{nullptr};
     TreeNode* right_node_{nullptr};
+    BoundingBox current_bound;
+    BoundingBox left_bound;
+    BoundingBox right_bound;
+
 };
 
 // return the smaller point with node
@@ -179,4 +239,28 @@ void delete_node_safely(const Point& data, TreeNode*& node, uint32_t dim) {
     node = delete_node(data, node, dim); // reset root node if root is deleted
     delete found_node;
     found_node = nullptr;
+}
+
+BoundingBox UpdateBounding(TreeNode*& node, uint32_t dim) {
+    if (!node) {
+        return BoundingBox();
+    }
+    node->current_bound.UpdatePoint(node->point_);
+    uint32_t next_dim = (dim + 1) % 2;
+    if (node->left_node_) {
+        node->left_bound = UpdateBounding(node->left_node_, next_dim);
+        node->current_bound.UpdateAll(node->left_bound);
+    }
+    if (node->right_node_) {
+        node->right_bound = UpdateBounding(node->right_node_, next_dim);
+        node->current_bound.UpdateAll(node->right_bound);
+    }
+    return node->current_bound;
+}
+
+void PrintBox(const BoundingBox& box) {
+    std::cout << "BoundingBox.x_max(): " << box.x_max << "\nBoundingBox.x_min(): " 
+            << box.x_min << "\nBoundingBox.y_max(): " << box.y_max 
+            << "\nBoundingBox.y_min(): " << box.y_min << std::endl;
+
 }
