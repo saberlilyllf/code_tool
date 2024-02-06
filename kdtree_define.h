@@ -2,6 +2,7 @@
 #include <iostream>
 #include <limits.h>
 #include <algorithm>
+#include <cmath>
 
 struct Point{
     Point(const double& x, const double& y) : point_x(x), point_y(y) {}
@@ -21,6 +22,12 @@ struct Point{
             return point_y;
         }
 
+    }
+
+    double DistanceTo(const Point& p) {
+        double delta_x = std::abs(p.get_dim(0) - point_x);
+        double delta_y = std::abs(p.get_dim(1) - point_y);
+        return std::sqrt(delta_x * delta_x + delta_y * delta_y);
     }
     double point_x;
     double point_y;
@@ -44,6 +51,24 @@ struct BoundingBox {
     double x_max {std::numeric_limits<double>::min()};
     double y_min {std::numeric_limits<double>::max()};
     double y_max {std::numeric_limits<double>::min()};
+
+    double MinDistanceTo(const Point& p) {
+        double delta_x = std::min(std::abs(p.get_dim(0) - x_min), std::abs(p.get_dim(0) - x_max));
+        double delta_y = std::min(std::abs(p.get_dim(1) - y_min), std::abs(p.get_dim(1) - y_max));
+        if ((p.get_dim(0) >= x_min && p.get_dim(0) <= x_max) || (p.get_dim(1) >= y_min && p.get_dim(1) <= y_max)) {
+            return std::min(delta_x, delta_y);
+        }
+        return std::sqrt(delta_x * delta_x + delta_y * delta_y);
+    }
+
+    bool WhetherInBox(const Point& p) {
+        if ((p.get_dim(0) > x_max) || (p.get_dim(1) > y_max) ||
+                (p.get_dim(0) < x_min) || (p.get_dim(1) < y_min)) {
+            return false;
+        }
+        return true;
+    }
+
     void UpdateAll(const BoundingBox& box) {
         if (box.x_max > x_max) {
             x_max = box.x_max;
@@ -263,4 +288,36 @@ void PrintBox(const BoundingBox& box) {
             << box.x_min << "\nBoundingBox.y_max(): " << box.y_max 
             << "\nBoundingBox.y_min(): " << box.y_min << std::endl;
 
+}
+
+TreeNode* NearestNeighbor(const Point& p, double& min_dis, TreeNode* node, uint32_t dim, TreeNode*& min_dist_node) {
+    if (!node) {
+        return nullptr;
+    }
+    double next_dim = (dim + 1) % 2;
+    double temp_dist =  node->current_bound.MinDistanceTo(p);
+    if (temp_dist > min_dis) {
+        return nullptr;
+    }
+
+    double distance = node->point_.DistanceTo(p);
+    if (distance < min_dis) {
+        min_dist_node = node;
+        min_dis = distance;
+    }
+
+    NearestNeighbor(p, min_dis, node->left_node_, next_dim, min_dist_node);
+    NearestNeighbor(p, min_dis, node->right_node_, next_dim, min_dist_node);
+
+    return node;
+}
+
+Point* GetNearestPoint(const Point& point, TreeNode* root) {
+    double min_dist = std::numeric_limits<double>::max();
+    TreeNode* min_dist_node = nullptr;
+    NearestNeighbor(point, min_dist, root, 0, min_dist_node);
+    if(!min_dist_node) {
+        return nullptr;
+    }
+    return &min_dist_node->point_;
 }

@@ -27,8 +27,12 @@ int main() {
 
     auto BoundingBox = UpdateBounding(root, 0);
     PrintBox(root->current_bound);
-    PrintBox(root->left_node_->current_bound);
-    PrintBox(root->right_node_->current_bound);
+    // PrintBox(root->left_node_->current_bound);
+    // PrintBox(root->right_node_->current_bound);
+    Point* nearest_point = GetNearestPoint(Point(9, 9), root);
+    if (nearest_point) {
+        std::cout << " nearest distance to point 71,71 node is " << *nearest_point << std::endl;
+    }
     // test node delete, especially root node
     for (auto& p : point_v) {
         delete_node_safely(p, root, 0);
