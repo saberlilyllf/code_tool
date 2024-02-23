@@ -11,10 +11,7 @@ project(
   VERSION 1.0
   LANGUAGES CXX)
 
-IF(CMAKE_COMPILER_IS_GNUCC)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
-ENDIF(CMAKE_COMPILER_IS_GNUCC)
+
 set(CMAKE_CXX_FLAGS "-g")
 # If you set any CMAKE_ variables, that can go here.
 # (But usually don't do this, except maybe for C++ standard)
@@ -27,12 +24,17 @@ INCLUDE_DIRECTORIES(./)
 # Other common choices are STATIC, SHARED, and MODULE
 # Including header files here helps IDEs but is not required.
 # Output libname matches target name, with the usual extensions on your system
-# add_library(MyLibExample simple_lib.cpp simple_lib.hpp)
+
+# add_library(MyLibExample SHARED print_tree.hpp)
 
 # Link each target with other targets or add options, etc.
 
 # Adding something we can run - Output name matches target name
-add_executable(demo_test kdtree_test.cpp)
+add_executable(demo_test kdtree_test.cpp print_tree.hpp)
+
+# set_target_properties(MyLibExample PROPERTIES LINKER_LANGUAGE CXX)
+
+# target_link_libraries (demo_test MyLibExample)
 
 # Make sure you link your targets with this command. It can also link libraries and
 # even flags, so linking a target that does not exist will not give a configure-time error.

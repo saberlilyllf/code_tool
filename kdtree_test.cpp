@@ -6,7 +6,7 @@
 
 
 #include <kdtree_define.h>
-#include <print_tree.h>
+#include <print_tree.hpp>
 
 int main() {
     std::vector<Point> point_v {{30,40}, {5,25}, {10,12}, {70,70}, {50,30}, {35,45}};
