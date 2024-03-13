@@ -321,3 +321,29 @@ Point* GetNearestPoint(const Point& point, TreeNode* root) {
     }
     return &min_dist_node->point_;
 }
+
+
+class BaseTest {
+public:
+
+    BaseTest () {
+    }
+    virtual void print() = 0;
+
+    // int* test = nullptr;
+};
+
+class DeriveTest : BaseTest {
+public:
+    DeriveTest() {
+        test = new int[6];
+    }
+    ~DeriveTest() {
+        delete[] test;
+        test = nullptr;
+    }
+    void print() {
+
+    };
+    int* test = nullptr;
+};

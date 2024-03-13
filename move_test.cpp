@@ -18,6 +18,7 @@ public:
         a.p = nullptr;
         delete a.p;
         a.a = 100;
+        this->a = 99;
     }  
 
     ~MoveTest() {
@@ -35,6 +36,7 @@ public:
 
 };
 void test_f(MoveTest test) {
+    std::cout << " ===after move, test.a is " << test.a << std::endl; 
     test.a = 1;
 }
 int main() {
@@ -43,7 +45,7 @@ int main() {
     MoveTest test2 = test1;
     MoveTest test3 = std::move(test2);
     test_f(std::move(test3)); // after add std::move to test3, the move is using, which made the test3 undefined;
-    std::cout << " after move, test3.a is" << test3.a << std::endl; 
+    std::cout << " after move, test3.a is " << test3.a << std::endl; 
 
 
     return 0;

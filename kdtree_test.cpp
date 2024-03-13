@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <limits>
+#include <memory>
 
 
 #include <kdtree_define.h>
@@ -43,6 +44,7 @@ int main() {
     if (root) {
         delete root;
     }
+    auto test = std::make_shared<DeriveTest>();
     return 0;
 }
 
