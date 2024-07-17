@@ -4,11 +4,11 @@
 #include <iostream>
 #include <limits>
 #include <memory>
-
+#include <atomic>
 
 #include <kdtree_define.h>
 #include <print_tree.hpp>
-
+#include <lock_free_stack.h>
 int main() {
     std::vector<Point> point_v {{30,40}, {5,25}, {10,12}, {70,70}, {50,30}, {35,45}};
     TreeNode* root = nullptr;
@@ -45,6 +45,14 @@ int main() {
         delete root;
     }
     auto test = std::make_shared<DeriveTest>();
+
+    std::atomic<Point*> node_ptr;
+    // std::shared_ptr<Point> node_ptr = std::make_shared<Point>(30,40);
+    bool is_ptr_lock_free = std::atomic_is_lock_free(&node_ptr);
+
+    // bool is_ptr_lock_free = std::atomic<std::shared_ptr<Point>>()::is_lock_free();
+
+    std::cout << " is ptr lock free " << is_ptr_lock_free;
     return 0;
 }
 

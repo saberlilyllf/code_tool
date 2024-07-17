@@ -30,7 +30,7 @@ INCLUDE_DIRECTORIES(./)
 # Link each target with other targets or add options, etc.
 
 # Adding something we can run - Output name matches target name
-add_executable(demo_test kdtree_test.cpp print_tree.hpp)
+add_executable(demo_test kdtree_test.cpp print_tree.hpp lock_free_stack.h)
 
 # set_target_properties(MyLibExample PROPERTIES LINKER_LANGUAGE CXX)
 
