@@ -238,3 +238,58 @@ public:
         return res;
     }
 };
+
+// using book 7.11 page 229
+template<typename T>
+class LockFreeStackCount {
+private:
+    struct Node;
+    struct CountedNodePtr {
+        int external_count;
+        Node* ptr;
+    };
+
+    struct Node {
+        std::shared_ptr<T> data;
+        std::atomic<int32_t> internal_count;
+        Node (const T& data_) : data(data_), internal_count(0) {}
+    };
+    std::atomic<CountedNodePtr> head;
+    void IncreaseHeadCount(CountedNodePtr& old_counter) {
+        CountedNodePtr new_counter;
+        do {
+            new_counter = old_counter;
+            ++new_counter.excternal_count;
+        } while (!head.compare_exchange_strong(old_counter, new_counter));
+        old_counter.external_count = new_counter.external_count;
+    }
+public:
+    ~LockFreeStackCount() {
+        while (Pop());
+    }
+    void Push(const T& data) {
+        CountedNodePtr new_node;
+        new_node.ptr = new Node(data);
+        new_node.external_count = 1;
+        new_node.ptr->next = head.load();
+        while(head.compare_exchange_weak(new_node.ptr->next, new_node));
+    }
+    std::shared_ptr<T> Pop() {
+        CountedNodePtr old_head = head.load();
+        Node* ptr = old_head.ptr;
+        if (!ptr) {
+            return std::shared_ptr<T>();
+        }
+        if (head.compare_exchande_strong(old_head, ptr->next)) {
+            std::shared_ptr<T> res;
+            res.swap(ptr->data);
+            int32_t count_increase = old_head.external_count - 2;
+            if (ptr->internal_count.fetch_add(count_increase) == -count_increase) {
+                delete ptr;
+            }
+            return res;
+        } else if (ptr->internal_count.fetch_sub(1) == 1) {
+            delete ptr;
+        }
+    }
+};
