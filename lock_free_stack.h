@@ -272,7 +272,7 @@ public:
         new_node.ptr = new Node(data);
         new_node.external_count = 1;
         new_node.ptr->next = head.load();
-        while(head.compare_exchange_weak(new_node.ptr->next, new_node));
+        while(!head.compare_exchange_weak(new_node.ptr->next, new_node));
     }
     std::shared_ptr<T> Pop() {
         CountedNodePtr old_head = head.load();
