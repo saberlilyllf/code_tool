@@ -276,20 +276,23 @@ public:
     }
     std::shared_ptr<T> Pop() {
         CountedNodePtr old_head = head.load();
-        Node* ptr = old_head.ptr;
-        if (!ptr) {
-            return std::shared_ptr<T>();
-        }
-        if (head.compare_exchande_strong(old_head, ptr->next)) {
-            std::shared_ptr<T> res;
-            res.swap(ptr->data);
-            int32_t count_increase = old_head.external_count - 2;
-            if (ptr->internal_count.fetch_add(count_increase) == -count_increase) {
+        for (;;) {
+            IncreaseHeadCount(old_head);
+            Node* ptr = old_head.ptr;
+            if (!ptr) {
+                return std::shared_ptr<T>();
+            }
+            if (head.compare_exchande_strong(old_head, ptr->next)) {
+                std::shared_ptr<T> res;
+                res.swap(ptr->data);
+                int32_t count_increase = old_head.external_count - 2;
+                if (ptr->internal_count.fetch_add(count_increase) == -count_increase) {
+                    delete ptr;
+                }
+                return res;
+            } else if (ptr->internal_count.fetch_sub(1) == 1) {
                 delete ptr;
             }
-            return res;
-        } else if (ptr->internal_count.fetch_sub(1) == 1) {
-            delete ptr;
         }
     }
 };
